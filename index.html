@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stroke Prediction Using Logistic Regression</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 50px;
+        color: #333;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      h1,
+      h2,
+      h3 {
+        color: #2c3e50;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+      .chart-container {
+        margin: 20px 0;
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 5px;
+      }
+      .summary-box {
+        background-color: #f8f9fa;
+        border-left: 4px solid #4285f4;
+        padding: 15px;
+        margin: 20px 0;
+      }
+      .feature-description {
+        margin-bottom: 30px;
+      }
+      .stats-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+      }
+      .stats-box {
+        flex-basis: 30%;
+        background-color: #f8f9fa;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        gap: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      @media (max-width: 768px) {
+        .stats-box {
+          flex-basis: 100%;
+        }
+      }
+
+      /* Additional styles for pdf*/
+      @media print {
+        table {
+          width: 100%;
+          max-width: 100%;
+          font-size: 9pt;
+          table-layout: fixed;
+        }
+        th,
+        td {
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+          padding: 3px;
+        }
+        .overflow-table {
+          overflow-x: visible !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Stroke Prediction Using Logistic Regression</h1>
+
+      <div class="summary-box">
+        <p>
+          According to the World Health Organization (WHO) stroke is the 2nd
+          leading cause of death globally, responsible for approximately 11% of
+          total deaths.
+        </p>
+        <p>
+          This dataset is used to predict whether a patient is likely to get
+          stroke based on the input parameters like gender, age, various
+          diseases, and smoking status. Each row in the data provides relevant
+          information about the patient.
+        </p>
+      </div>
+
+      <h2>Dataset Overview and Preprocessing</h2>
+      <p>
+        The dataset used for this project contains detailed information for each
+        patient, where every record represents a single patient and includes the
+        following key features:
+      </p>
+      <ul>
+        <li>This dataset contains: 5110 rows and 12 columns</li>
+        <li><strong>id</strong>: unique identifier</li>
+        <li><strong>gender</strong>: "Male", "Female" or "Other"</li>
+        <li><strong>age</strong>: age of the patient</li>
+        <li>
+          <strong>hypertension</strong>: 0 if the patient doesn't have
+          hypertension, 1 if the patient has hypertension
+        </li>
+        <li>
+          <strong>heart_disease</strong>: 0 if the patient doesn't have any
+          heart diseases, 1 if the patient has a heart disease
+        </li>
+        <li><strong>ever_married</strong>: "No" or "Yes"</li>
+        <li>
+          <strong>work_type</strong>: "children", "Govt_job", "Never_worked",
+          "Private" or "Self-employed"
+        </li>
+        <li><strong>Residence_type</strong>: "Rural" or "Urban"</li>
+        <li>
+          <strong>avg_glucose_level</strong>: average glucose level in blood
+        </li>
+        <li><strong>bmi</strong>: body mass index</li>
+        <li>
+          <strong>smoking_status</strong>: "formerly smoked", "never smoked",
+          "smokes" or "Unknown"
+        </li>
+        <li>
+          <strong>stroke</strong>: 1 if the patient had a stroke or 0 if not
+        </li>
+      </ul>
+      <p>
+        <em
+          >Note: "Unknown" in smoking_status means that the information is
+          unavailable for this patient</em
+        >
+      </p>
+
+      <h2>Sample Data</h2>
+      <div style="overflow-x: auto">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Gender</th>
+              <th>Age</th>
+              <th>Hypertension</th>
+              <th>Heart Disease</th>
+              <th>Ever Married</th>
+              <th>Work Type</th>
+              <th>Residence Type</th>
+              <th>Avg Glucose Level</th>
+              <th>BMI</th>
+              <th>Smoking Status</th>
+              <th>Stroke</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>9046</td>
+              <td>Male</td>
+              <td>67</td>
+              <td>0</td>
+              <td>1</td>
+              <td>Yes</td>
+              <td>Private</td>
+              <td>Urban</td>
+              <td>228.69</td>
+              <td>36.6</td>
+              <td>formerly smoked</td>
+              <td>1</td>
+            </tr>
+            <tr>
+              <td>51676</td>
+              <td>Female</td>
+              <td>61</td>
+              <td>0</td>
+              <td>0</td>
+              <td>Yes</td>
+              <td>Self-employed</td>
+              <td>Rural</td>
+              <td>202.21</td>
+              <td>N/A</td>
+              <td>never smoked</td>
+              <td>1</td>
+            </tr>
+            <tr>
+              <td>31112</td>
+              <td>Male</td>
+              <td>80</td>
+              <td>0</td>
+              <td>1</td>
+              <td>Yes</td>
+              <td>Private</td>
+              <td>Rural</td>
+              <td>105.92</td>
+              <td>32.5</td>
+              <td>never smoked</td>
+              <td>1</td>
+            </tr>
+            <tr>
+              <td>60182</td>
+              <td>Female</td>
+              <td>49</td>
+              <td>0</td>
+              <td>0</td>
+              <td>Yes</td>
+              <td>Private</td>
+              <td>Urban</td>
+              <td>171.23</td>
+              <td>34.4</td>
+              <td>smokes</td>
+              <td>1</td>
+            </tr>
+            <tr>
+              <td>1665</td>
+              <td>Female</td>
+              <td>79</td>
+              <td>1</td>
+              <td>0</td>
+              <td>Yes</td>
+              <td>Self-employed</td>
+              <td>Rural</td>
+              <td>174.12</td>
+              <td>24</td>
+              <td>never smoked</td>
+              <td>1</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Data Preprocessing</h2>
+      <div class="feature-description">
+        <p>
+          To create any predictive model, the process of data processing
+          involves:
+        </p>
+        <ol>
+          <li>
+            <strong>Data Cleaning</strong>: Checking for and handling missing
+            values. For example, the BMI column may contain missing values that
+            can be replaced with the average or middle value.
+          </li>
+          <li>
+            <strong>Feature Encoding</strong>: Most of the features in the
+            dataset are categories, such as gender, work type, residence type,
+            and smoking status. These could be converted into numbers by
+            techniques such as One hot encoding or label encoding.
+          </li>
+          <li>
+            <strong>Feature Scaling</strong>: The values of age, average blood
+            glucose level, and BMI can be scaled to be equally important during
+            training of the model. Methods to scale these values usually
+            standardization (z-score normalization) and min-max scaling.
+          </li>
+          <li>
+            <strong>Data Splitting</strong>: The dataset is divided into 2 sets:
+            training and testing sets (usually 80/20 split). This helps
+            observing how well the model performs on new data.
+          </li>
+        </ol>
+        <p>
+          This dataset considered a supervised learning problem since it
+          contains a labeled column stroke (following the previous lesson of
+          distinguishing supervised learning vs unsupervised learning).
+        </p>
+      </div>
+
+      <h2>Descriptive Statistics</h2>
+
+      <div class="stats-container">
+        <div class="stats-box">
+          <h3>Age</h3>
+          <ul>
+            <li>Count: 5110</li>
+            <li>Mean (Average): ~43.23 years</li>
+            <li>Median: 45 years</li>
+            <li>Standard Deviation: ~22.61 years</li>
+            <li>Range: 0.08 (min) to 82 (max)</li>
+            <li>25th percentile: 25 years</li>
+            <li>75th percentile: 61 years</li>
+          </ul>
+        </div>
+
+        <div class="stats-box">
+          <h3>Average Glucose Level</h3>
+          <ul>
+            <li>Count: 5110</li>
+            <li>Mean (Average): ~106.15 mg/dL</li>
+            <li>Median: ~91.89 mg/dL</li>
+            <li>Standard Deviation: ~45.28 mg/dL</li>
+            <li>Range: ~55.12 mg/dL (min) to ~271.74 mg/dL (max)</li>
+            <li>25th percentile: ~77.25 mg/dL</li>
+            <li>75th percentile: ~114.09 mg/dL</li>
+          </ul>
+        </div>
+
+        <div class="stats-box">
+          <h3>BMI (Body Mass Index)</h3>
+          <ul>
+            <li>Count: 4909 (missing 201 entries)</li>
+            <li>Mean (Average): ~28.89</li>
+            <li>Median: ~28.10</li>
+            <li>Standard Deviation: ~7.85</li>
+            <li>Range: 10.30 (min) to 97.60 (max)</li>
+            <li>25th percentile: 23.50</li>
+            <li>75th percentile: 33.10</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stats-container">
+        <div class="stats-box">
+          <h3>Hypertension & Heart Disease</h3>
+          <p><strong>Hypertension:</strong></p>
+          <ul>
+            <li>0 (No): 4658 records</li>
+            <li>1 (Yes): 452 records</li>
+          </ul>
+          <p><strong>Heart Disease:</strong></p>
+          <ul>
+            <li>0 (No): 4897 records</li>
+            <li>1 (Yes): 213 records</li>
+          </ul>
+        </div>
+
+        <div class="stats-box">
+          <h3>Categorical Variables</h3>
+          <p>
+            <strong>Gender:</strong> Female (2994) is the most common, followed
+            by Male
+          </p>
+          <p>
+            <strong>Marital Status:</strong> "Yes" is predominant (3353 cases)
+          </p>
+          <p>
+            <strong>Work Type:</strong> "Private" is most frequent (2925
+            records)
+          </p>
+          <p>
+            <strong>Residence Type:</strong> "Urban" is the top category (2596
+            cases)
+          </p>
+          <p>
+            <strong>Smoking Status:</strong> "never smoked" is most common (1892
+            cases)
+          </p>
+        </div>
+      </div>
+      <!-- Add this section after the Descriptive Statistics section in your index.html file -->
+
+      <h2>Data Visualization and Analysis</h2>
+      <div class="feature-description">
+        <p>
+          Visual analysis of the dataset reveals important patterns and
+          relationships between various factors and stroke occurrence. The
+          following charts highlight key insights from the data:
+        </p>
+      </div>
+
+      <div class="chart-container">
+        <h3>Age Distribution by Stroke Occurrence</h3>
+        <div style="text-align: center">
+          <img
+            src="visualize-chart-img/age-distribution-by-stroke.png"
+            alt="Age Distribution by Stroke"
+            style="max-width: 100%; height: auto"
+          />
+        </div>
+        <div class="summary-box">
+          <p>
+            This visualization shows the age distribution for patients with and
+            without stroke. The density plot clearly demonstrates that stroke
+            cases are more prevalent in older age groups, with the peak for
+            stroke patients occurring at a much higher age compared to
+            non-stroke patients. This confirms that age is one of the most
+            significant risk factors for stroke.
+          </p>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <h3>BMI Categories and Stroke Rate</h3>
+        <div style="text-align: center">
+          <img
+            src="visualize-chart-img/stroke-rate-bmi-category.png"
+            alt="Stroke Rate by BMI Category"
+            style="max-width: 100%; height: auto"
+          />
+        </div>
+        <div class="summary-box">
+          <p>
+            This chart examines the relationship between BMI categories
+            (Underweight, Normal, Overweight, Obese, Severely Obese) and stroke
+            rate. The data shows how stroke risk varies across different body
+            mass index ranges, providing insights into how weight management
+            might relate to stroke prevention.
+          </p>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <h3>Impact of Smoking on Stroke Risk</h3>
+        <div style="text-align: center">
+          <img
+            src="visualize-chart-img/impact-of-smoking-on-stroke.png"
+            alt="Impact of Smoking on Stroke Risk"
+            style="max-width: 100%; height: auto"
+          />
+        </div>
+        <div class="summary-box">
+          <p>
+            This visualization shows the count of stroke and non-stroke cases
+            across different smoking statuses (never smoked, formerly smoked,
+            currently smokes, and unknown). The chart helps identify whether
+            certain smoking behaviors are associated with higher stroke
+            occurrence in the dataset.
+          </p>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <h3>Relationship Between Heart Disease and Stroke</h3>
+        <div style="text-align: center">
+          <img
+            src="visualize-chart-img/stroke-rate-heart-disease.png"
+            alt="Stroke Rate in Individuals with vs without Heart Disease"
+            style="max-width: 100%; height: auto"
+          />
+        </div>
+        <div class="summary-box">
+          <p>
+            This bar chart compares the stroke rate between individuals with and
+            without heart disease. The significant difference in stroke rates
+            highlights the strong association between heart disease and stroke
+            risk, emphasizing the importance of cardiovascular health in stroke
+            prevention.
+          </p>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <h3>Relationship Between Work Type and Stroke</h3>
+        <div style="text-align: center">
+          <img
+            src="visualize-chart-img/relationship-stroke-and-worktype.png"
+            alt="Number of Strokes by Work Type"
+            style="max-width: 100%; height: auto"
+          />
+        </div>
+        <div class="summary-box">
+          <p>
+            This visualization shows the number of stroke cases across different
+            work types (Private, Self-employed, Government job, etc.). The
+            distribution helps identify whether certain occupational categories
+            might be associated with higher stroke risk, potentially due to
+            lifestyle factors, stress levels, or other work-related variables.
+          </p>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <h3>Stroke Occurrence by Gender</h3>
+        <div style="text-align: center">
+          <img
+            src="visualize-chart-img/stroke-by-gender.png"
+            alt="Number of Strokes by Gender"
+            style="max-width: 100%; height: auto"
+          />
+        </div>
+        <div class="summary-box">
+          <p>
+            This bar chart compares the number of stroke cases between males and
+            females. The visualization helps identify any gender-based
+            differences in stroke occurrence, which could be important for
+            targeted prevention strategies and understanding gender-specific
+            risk factors.
+          </p>
+        </div>
+      </div>
+
+      <h2>Logistic Regression for Stroke Prediction</h2>
+      <div class="feature-description">
+        <p>
+          For this project, Logistic Regression is chosen as the algorithm to
+          predict the risk of stroke. Logistic Regression is usually used for
+          two-choice (binary) problems. It estimates the probability that a
+          given input is in a given group that whether a patient will suffer
+          from a stroke (1) or not (0).
+        </p>
+
+        <h3>Overview:</h3>
+        <ul>
+          <li>
+            <strong>Binary Outcome:</strong> Logistic Regression is designed for
+            binary outcomes. It uses the logistic (sigmoid) function to convert
+            predicted values to probabilities between 0 and 1.
+          </li>
+          <li>
+            <strong>Model Formulation:</strong> It considers various factors
+            such as age, blood pressure, smoking status, etc., and assigns a
+            "weight" or importance to each factor. It then combines these
+            weights to come up with a final score that shows how likely a
+            patient will have a stroke.
+          </li>
+          <li>
+            <strong>Interpretability:</strong> The weights it assigns can tell
+            you which factors increase or decrease the risk of stroke. For
+            example, if the weight for age is high, it means that the older you
+            are, the higher your risk of a stroke is. This makes it useful,
+            especially in healthcare, because doctors can see which factors
+            matter the most.
+          </li>
+          <li>
+            <strong>Optimization:</strong> The model is trained by adjusting
+            weights for accurate predictions. It is similar to turning a radio
+            to receive the best sound.
+          </li>
+        </ul>
+      </div>
+
+      <h2>Applying Logistic Regression to Stroke Prediction</h2>
+      <div class="feature-description">
+        <h3>Data Preparation</h3>
+        <ul>
+          <li>
+            Cleaning the data by handling missing values, particularly in the
+            BMI column.
+          </li>
+          <li>Encoding categorical variables into numerical formats.</li>
+          <li>Scaling numerical features to ensure consistent input ranges.</li>
+        </ul>
+
+        <h3>Model Training and Evaluation</h3>
+        <ul>
+          <li>
+            Once the data is cleaned, the dataset is split into training and
+            testing sets.
+          </li>
+          <li>
+            Using training set, the Logistic Regression model learns by
+            adjusting weights for each feature. It attempts to minimize errors,
+            which are measured by a method called log-loss.
+          </li>
+          <li>
+            After training, the model is evaluated using various metrics such
+            as:
+            <ul>
+              <li>Accuracy: How often the model's predictions are correct.</li>
+              <li>
+                Precision and Recall: These are key for medical use. They help
+                ensure high risk patients are identified,
+                <!DOCTYPE html>
+                <html lang="en">
+                  <head>
+                    <meta charset="UTF-8" />
+                    <meta
+                      name="viewport"
+                      content="width=device-width, initial-scale=1.0"
+                    />
+                    <title>Stroke Prediction Using Machine Learning</title>
+                    <style>
+                      body {
+                        font-family: Arial, sans-serif;
+                        line-height: 1.6;
+                        margin: 0;
+                        padding: 20px;
+                        color: #333;
+                      }
+                      .container {
+                        max-width: 1200px;
+                        margin: 0 auto;
+                      }
+                      h1,
+                      h2,
+                      h3 {
+                        color: #2c3e50;
+                      }
+                      table {
+                        border-collapse: collapse;
+                        width: 100%;
+                        margin-bottom: 20px;
+                      }
+                      th,
+                      td {
+                        border: 1px solid #ddd;
+                        padding: 8px;
+                        text-align: left;
+                      }
+                      th {
+                        background-color: #f2f2f2;
+                      }
+                      tr:nth-child(even) {
+                        background-color: #f9f9f9;
+                      }
+                      .chart-container {
+                        margin: 20px 0;
+                        border: 1px solid #ddd;
+                        padding: 15px;
+                        border-radius: 5px;
+                      }
+                      .summary-box {
+                        background-color: #f8f9fa;
+                        border-left: 4px solid #4285f4;
+                        padding: 15px;
+                        margin: 20px 0;
+                      }
+                      .feature-description {
+                        margin-bottom: 30px;
+                      }
+                      .stats-container {
+                        display: flex;
+                        flex-wrap: wrap;
+                        justify-content: space-between;
+                      }
+                      .stats-box {
+                        flex-basis: 30%;
+                        background-color: #f8f9fa;
+                        padding: 15px;
+                        margin-bottom: 20px;
+                        border-radius: 5px;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                      }
+                      .model-comparison {
+                        display: flex;
+                        flex-wrap: wrap;
+                        justify-content: space-between;
+                        margin-bottom: 30px;
+                      }
+                      .model-card {
+                        flex-basis: 100%;
+                        border: 1px solid #ddd;
+                        border-radius: 8px;
+                        padding: 20px;
+                        margin-bottom: 20px;
+                        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+                      }
+                      .model-card h3 {
+                        margin-top: 0;
+                        padding-bottom: 10px;
+                        border-bottom: 1px solid #eee;
+                      }
+                      .metrics-table {
+                        width: 100%;
+                        margin: 15px 0;
+                      }
+                      .confusion-matrix {
+                        display: grid;
+                        grid-template-columns: 60px 1fr 1fr;
+                        grid-template-rows: 60px 1fr 1fr;
+                        width: 250px;
+                        margin: 20px auto;
+                        text-align: center;
+                      }
+                      .matrix-cell {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border: 1px solid #ddd;
+                        padding: 10px;
+                      }
+                      .matrix-header {
+                        background-color: #f2f2f2;
+                        font-weight: bold;
+                      }
+                      .matrix-corner {
+                        background-color: #fff;
+                        border: none;
+                      }
+                      .tp {
+                        background-color: #d5f5e3;
+                      }
+                      .tn {
+                        background-color: #d5f5e3;
+                      }
+                      .fp {
+                        background-color: #fadbd8;
+                      }
+                      .fn {
+                        background-color: #fadbd8;
+                      }
+                      .code-block {
+                        background-color: #f5f5f5;
+                        padding: 15px;
+                        border-radius: 5px;
+                        font-family: monospace;
+                        white-space: pre-wrap;
+                        margin: 15px 0;
+                      }
+                      @media (max-width: 768px) {
+                        .stats-box,
+                        .model-card {
+                          flex-basis: 100%;
+                        }
+                      }
+                    </style>
+                  </head>
+                  <body>
+                    <div class="container">
+                      <h1>Stroke Prediction Using Machine Learning</h1>
+
+                      <div class="summary-box">
+                        <p>
+                          According to the World Health Organization (WHO)
+                          stroke is the 2nd leading cause of death globally,
+                          responsible for approximately 11% of total deaths.
+                        </p>
+                        <p>
+                          This dataset is used to predict whether a patient is
+                          likely to get stroke based on the input parameters
+                          like gender, age, various diseases, and smoking
+                          status. Each row in the data provides relevant
+                          information about the patient.
+                        </p>
+                      </div>
+
+                      <h2>Data Preview</h2>
+                      <div style="overflow-x: auto">
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>ID</th>
+                              <th>Gender</th>
+                              <th>Age</th>
+                              <th>Hypertension</th>
+                              <th>Heart Disease</th>
+                              <th>Ever Married</th>
+                              <th>Work Type</th>
+                              <th>Residence Type</th>
+                              <th>Avg Glucose Level</th>
+                              <th>BMI</th>
+                              <th>Smoking Status</th>
+                              <th>Stroke</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>9046</td>
+                              <td>Male</td>
+                              <td>67.0</td>
+                              <td>0</td>
+                              <td>1</td>
+                              <td>Yes</td>
+                              <td>Private</td>
+                              <td>Urban</td>
+                              <td>228.69</td>
+                              <td>36.6</td>
+                              <td>formerly smoked</td>
+                              <td>1</td>
+                            </tr>
+                            <tr>
+                              <td>51676</td>
+                              <td>Female</td>
+                              <td>61.0</td>
+                              <td>0</td>
+                              <td>0</td>
+                              <td>Yes</td>
+                              <td>Self-employed</td>
+                              <td>Rural</td>
+                              <td>202.21</td>
+                              <td>N/A</td>
+                              <td>never smoked</td>
+                              <td>1</td>
+                            </tr>
+                            <tr>
+                              <td>31112</td>
+                              <td>Male</td>
+                              <td>80.0</td>
+                              <td>0</td>
+                              <td>1</td>
+                              <td>Yes</td>
+                              <td>Private</td>
+                              <td>Rural</td>
+                              <td>105.92</td>
+                              <td>32.5</td>
+                              <td>never smoked</td>
+                              <td>1</td>
+                            </tr>
+                            <tr>
+                              <td>60182</td>
+                              <td>Female</td>
+                              <td>49.0</td>
+                              <td>0</td>
+                              <td>0</td>
+                              <td>Yes</td>
+                              <td>Private</td>
+                              <td>Urban</td>
+                              <td>171.23</td>
+                              <td>34.4</td>
+                              <td>smokes</td>
+                              <td>1</td>
+                            </tr>
+                            <tr>
+                              <td>1665</td>
+                              <td>Female</td>
+                              <td>79.0</td>
+                              <td>1</td>
+                              <td>0</td>
+                              <td>Yes</td>
+                              <td>Self-employed</td>
+                              <td>Rural</td>
+                              <td>174.12</td>
+                              <td>24.0</td>
+                              <td>never smoked</td>
+                              <td>1</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <div class="summary-box">
+                        <p>After applying SMOTE oversampling:</p>
+                        <ul>
+                          <li>Label '1' (stroke): 3901 samples</li>
+                          <li>Label '0' (no stroke): 3901 samples</li>
+                        </ul>
+                      </div>
+
+                      <h2>Model Performance Analysis</h2>
+                      <p>
+                        We implemented and compared two machine learning
+                        algorithms for stroke prediction: Logistic Regression
+                        and XGBoost. Below is an analysis of their performance
+                        on the stroke dataset.
+                      </p>
+
+                      <div class="model-comparison">
+                        <div class="model-card">
+                          <h3>Logistic Regression Results</h3>
+
+                          <p>
+                            Logistic Regression with SMOTE Oversampling was used
+                            to address the class imbalance in the dataset.
+                          </p>
+
+                          <h4>Performance Metrics</h4>
+                          <div class="code-block">
+                            <pre>
+    --- Logistic Regression with SMOTE Oversampling ---
+    Accuracy: 75.15 %
+    
+    Classification Report:
+                    precision    recall  f1-score   support
+    
+                0       0.98      0.75      0.85       960
+                1       0.17      0.81      0.28        62
+    
+        accuracy                           0.75      1022
+        macro avg       0.58      0.78      0.57      1022
+        weighted avg       0.93      0.75      0.82      1022
+                            </pre>
+                          </div>
+
+                          <h4>Confusion Matrix</h4>
+                          <div class="code-block">
+                            Confusion Matrix: [[718 242] [ 12 50]]
+                          </div>
+
+                          <div class="confusion-matrix">
+                            <div class="matrix-cell matrix-corner"></div>
+                            <div class="matrix-cell matrix-header">
+                              Predicted No
+                            </div>
+                            <div class="matrix-cell matrix-header">
+                              Predicted Yes
+                            </div>
+                            <div class="matrix-cell matrix-header">
+                              Actual No
+                            </div>
+                            <div class="matrix-cell tn">TN: 718</div>
+                            <div class="matrix-cell fp">FP: 242</div>
+                            <div class="matrix-cell matrix-header">
+                              Actual Yes
+                            </div>
+                            <div class="matrix-cell fn">FN: 12</div>
+                            <div class="matrix-cell tp">TP: 50</div>
+                          </div>
+
+                          <h4>Analysis</h4>
+                          <ul>
+                            <li>
+                              <strong>Accuracy:</strong> 75.15% - The model
+                              correctly predicts about three-quarters of all
+                              cases.
+                            </li>
+                            <li>
+                              <strong>Precision for Stroke (Class 1):</strong>
+                              0.17 - Only 17% of predicted stroke cases are
+                              actual strokes, indicating many false positives.
+                            </li>
+                            <li>
+                              <strong>Recall for Stroke (Class 1):</strong> 0.81
+                              - The model captures 81% of all actual stroke
+                              cases, which is quite good.
+                            </li>
+                            <li>
+                              <strong>F1-Score for Stroke (Class 1):</strong>
+                              0.28 - The harmonic mean of precision and recall
+                              is low due to the poor precision.
+                            </li>
+                            <li>
+                              <strong>Confusion Matrix:</strong> Shows 50 true
+                              positives, 718 true negatives, 242 false
+                              positives, and 12 false negatives.
+                            </li>
+                          </ul>
+
+                          <h4>Strengths and Weaknesses</h4>
+                          <ul>
+                            <li>
+                              <strong>Strengths:</strong> High recall for stroke
+                              cases (0.81) means the model is good at
+                              identifying patients who will have a stroke.
+                            </li>
+                            <li>
+                              <strong>Weaknesses:</strong> Low precision (0.17)
+                              means many patients will be falsely identified as
+                              at risk for stroke.
+                            </li>
+                            <li>
+                              The model has a bias toward predicting stroke
+                              cases, likely due to the SMOTE oversampling
+                              technique used to balance the classes.
+                            </li>
+                          </ul>
+                        </div>
+
+                        <div class="model-card">
+                          <h3>XGBoost Results</h3>
+
+                          <p>
+                            XGBoost (Extreme Gradient Boosting) was also applied
+                            with SMOTE oversampling to handle the class
+                            imbalance.
+                          </p>
+
+                          <h4>Performance Metrics</h4>
+                          <div class="code-block">
+                            <pre>
+        --- XGBoost Classifier Results ---
+        Accuracy: 90.8 %
+        
+        Classification Report:
+                        precision    recall  f1-score   support
+        
+                    0       0.94      0.96      0.95       960
+                    1       0.14      0.10      0.11        62
+        
+            accuracy                           0.91      1022
+            macro avg       0.54      0.53      0.53      1022
+        weighted avg       0.89      0.91      0.90      1022
+                                                </pre
+                            >
+                          </div>
+
+                          <h4>Confusion Matrix</h4>
+                          <div class="code-block">
+                            Confusion Matrix: [[922 38] [ 56 6]]
+                          </div>
+
+                          <div class="confusion-matrix">
+                            <div class="matrix-cell matrix-corner"></div>
+                            <div class="matrix-cell matrix-header">
+                              Predicted No
+                            </div>
+                            <div class="matrix-cell matrix-header">
+                              Predicted Yes
+                            </div>
+                            <div class="matrix-cell matrix-header">
+                              Actual No
+                            </div>
+                            <div class="matrix-cell tn">TN: 922</div>
+                            <div class="matrix-cell fp">FP: 38</div>
+                            <div class="matrix-cell matrix-header">
+                              Actual Yes
+                            </div>
+                            <div class="matrix-cell fn">FN: 56</div>
+                            <div class="matrix-cell tp">TP: 6</div>
+                          </div>
+
+                          <h4>Analysis</h4>
+                          <ul>
+                            <li>
+                              <strong>Accuracy:</strong> 90.8% - The model has a
+                              high overall accuracy rate.
+                            </li>
+                            <li>
+                              <strong>Precision for Stroke (Class 1):</strong>
+                              0.14 - Only 14% of predicted stroke cases are
+                              actual strokes.
+                            </li>
+                            <li>
+                              <strong>Recall for Stroke (Class 1):</strong> 0.10
+                              - The model only captures 10% of all actual stroke
+                              cases, which is quite low.
+                            </li>
+                            <li>
+                              <strong>F1-Score for Stroke (Class 1):</strong>
+                              0.11 - The harmonic mean of precision and recall
+                              is very low.
+                            </li>
+                            <li>
+                              <strong>Confusion Matrix:</strong> Shows 6 true
+                              positives, 922 true negatives, 38 false positives,
+                              and 56 false negatives.
+                            </li>
+                          </ul>
+
+                          <h4>Strengths and Weaknesses</h4>
+                          <ul>
+                            <li>
+                              <strong>Strengths:</strong> Very high accuracy for
+                              non-stroke cases (0.96 recall for class 0) means
+                              the model rarely misclassifies healthy patients.
+                            </li>
+                            <li>
+                              <strong>Weaknesses:</strong>
+                              Very low recall for stroke cases (0.10) means the
+                              model misses 90% of patients who would have a
+                              stroke. This is a critical limitation in a medical
+                              context where failing to identify at-risk patients
+                              could have life-threatening consequences.
+                            </li>
+                          </ul>
+                        </div>
+                        <h2>
+                          Detailed Comparison Between Logistic Regression and
+                          XGBoost
+                        </h2>
+
+                        <div class="summary-box">
+                          <p>
+                            Both Logistic Regression and XGBoost were applied to
+                            the stroke prediction task with SMOTE oversampling
+                            to address class imbalance. Below is a comprehensive
+                            comparison of their performance, strengths, and
+                            limitations.
+                          </p>
+                        </div>
+
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>Aspect</th>
+                              <th>Logistic Regression</th>
+                              <th>XGBoost</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td><strong>Accuracy</strong></td>
+                              <td>75.15%</td>
+                              <td>90.8%</td>
+                            </tr>
+                            <tr>
+                              <td><strong>Precision (Class 1)</strong></td>
+                              <td>0.17</td>
+                              <td>0.14</td>
+                            </tr>
+                            <tr>
+                              <td><strong>Recall (Class 1)</strong></td>
+                              <td>0.81</td>
+                              <td>0.10</td>
+                            </tr>
+                            <tr>
+                              <td><strong>F1-Score (Class 1)</strong></td>
+                              <td>0.28</td>
+                              <td>0.11</td>
+                            </tr>
+                            <tr>
+                              <td><strong>True Positives</strong></td>
+                              <td>50</td>
+                              <td>6</td>
+                            </tr>
+                            <tr>
+                              <td><strong>False Positives</strong></td>
+                              <td>242</td>
+                              <td>38</td>
+                            </tr>
+                            <tr>
+                              <td><strong>True Negatives</strong></td>
+                              <td>718</td>
+                              <td>922</td>
+                            </tr>
+                            <tr>
+                              <td><strong>False Negatives</strong></td>
+                              <td>12</td>
+                              <td>56</td>
+                            </tr>
+                          </tbody>
+                        </table>
+
+                        <h3>Performance Analysis</h3>
+
+                        <div class="feature-description">
+                          <h4>1. Overall Accuracy</h4>
+                          <p>
+                            XGBoost achieves significantly higher overall
+                            accuracy (90.8%) compared to Logistic Regression
+                            (75.15%). However, this metric can be misleading in
+                            imbalanced datasets like this one, where stroke
+                            cases (class 1) are much fewer than non-stroke cases
+                            (class 0).
+                          </p>
+
+                          <h4>2. Class Imbalance Handling</h4>
+                          <p>
+                            Despite both models using SMOTE for oversampling:
+                          </p>
+                          <ul>
+                            <li>
+                              <strong>Logistic Regression</strong> shows a bias
+                              toward predicting stroke cases, resulting in many
+                              false positives but few false negatives.
+                            </li>
+                            <li>
+                              <strong>XGBoost</strong> shows a bias toward
+                              predicting non-stroke cases, resulting in few
+                              false positives but many false negatives.
+                            </li>
+                          </ul>
+
+                          <h4>3. Stroke Detection Capability</h4>
+                          <p>
+                            The models differ dramatically in their ability to
+                            detect actual stroke cases:
+                          </p>
+                          <ul>
+                            <li>
+                              <strong>Logistic Regression</strong> captures 81%
+                              of stroke cases (50 out of 62), making it much
+                              more effective at identifying patients at risk.
+                            </li>
+                            <li>
+                              <strong>XGBoost</strong> only captures 10% of
+                              stroke cases (6 out of 62), missing 90% of
+                              patients who would have a stroke.
+                            </li>
+                          </ul>
+
+                          <h4>4. False Alarm Rate</h4>
+                          <p>
+                            The models also differ in their tendency to raise
+                            false alarms:
+                          </p>
+                          <ul>
+                            <li>
+                              <strong>Logistic Regression</strong> has a high
+                              false positive rate, incorrectly flagging 242 out
+                              of 960 non-stroke cases as stroke risks.
+                            </li>
+                            <li>
+                              <strong>XGBoost</strong> has a much lower false
+                              positive rate, incorrectly flagging only 38 out of
+                              960 non-stroke cases.
+                            </li>
+                          </ul>
+                        </div>
+
+                        <h3>Clinical Implications</h3>
+
+                        <div class="feature-description">
+                          <p>
+                            The choice between these models depends on the
+                            clinical priorities:
+                          </p>
+
+                          <h4>
+                            Scenario 1: Prioritizing Detection of All Stroke
+                            Cases
+                          </h4>
+                          <p>
+                            <strong
+                              >Logistic Regression would be preferred</strong
+                            >
+                            if the primary goal is to identify as many potential
+                            stroke patients as possible, even at the cost of
+                            false alarms. This approach is valuable when:
+                          </p>
+                          <ul>
+                            <li>
+                              Missing a stroke diagnosis could be
+                              life-threatening
+                            </li>
+                            <li>
+                              Additional tests can be performed to confirm
+                              positive predictions
+                            </li>
+                            <li>
+                              The cost of follow-up testing is relatively low
+                              compared to the cost of missing a stroke case
+                            </li>
+                          </ul>
+
+                          <h4>Scenario 2: Minimizing False Alarms</h4>
+                          <p>
+                            <strong>XGBoost would be preferred</strong> if the
+                            primary goal is to minimize false positives and
+                            focus resources only on the most certain cases. This
+                            approach might be valuable when:
+                          </p>
+                          <ul>
+                            <li>Resources for follow-up testing are limited</li>
+                            <li>
+                              False positives could lead to unnecessary patient
+                              anxiety or costly procedures
+                            </li>
+                            <li>
+                              The model is used as an initial screening tool
+                              before more thorough evaluations
+                            </li>
+                          </ul>
+                        </div>
+
+                        <h3>Technical Considerations</h3>
+
+                        <div class="feature-description">
+                          <h4>1. Model Complexity</h4>
+                          <ul>
+                            <li>
+                              <strong>Logistic Regression</strong> is a simpler,
+                              more interpretable model that assigns linear
+                              weights to features.
+                            </li>
+                            <li>
+                              <strong>XGBoost</strong> is a more complex
+                              ensemble model that can capture non-linear
+                              relationships and feature interactions.
+                            </li>
+                          </ul>
+
+                          <h4>2. Response to SMOTE Oversampling</h4>
+                          <p>
+                            The models responded differently to the SMOTE
+                            oversampling technique:
+                          </p>
+                          <ul>
+                            <li>
+                              <strong>Logistic Regression</strong> appears to
+                              have been more influenced by the synthetic
+                              samples, leading to its higher sensitivity for
+                              stroke cases.
+                            </li>
+                            <li>
+                              <strong>XGBoost</strong> seems to have been less
+                              affected by oversampling, maintaining a stronger
+                              bias toward the majority class.
+                            </li>
+                          </ul>
+
+                          <h4>3. Potential for Improvement</h4>
+                          <ul>
+                            <li>
+                              <strong>Logistic Regression</strong> could benefit
+                              from adjusting the classification threshold to
+                              reduce false positives while maintaining
+                              reasonable recall.
+                            </li>
+                            <li>
+                              <strong>XGBoost</strong> could benefit from
+                              different sampling techniques, class weighting, or
+                              cost-sensitive learning to improve its ability to
+                              detect stroke cases.
+                            </li>
+                          </ul>
+                        </div>
+                        <h3>Visualization of Model Trade-offs</h3>
+
+                        <div
+                          style="
+                            text-align: center;
+                            margin: 30px 0;
+                            border: 2px solid red;
+                            padding: 20px;
+                          "
+                        >
+                          <img
+                            src="visualize-chart-img/precision-recall-tradeoff.png"
+                            alt="Precision-Recall Trade-off"
+                            style="max-width: 100%; height: auto"
+                          />
+                          <p>
+                            <em
+                              >Visualization of the precision-recall trade-off
+                              between the two models. The curved lines represent
+                              constant F1 scores.</em
+                            >
+                          </p>
+                        </div>
+
+                        <h3>Recommendation</h3>
+
+                        <div class="summary-box">
+                          <p>Based on the results:</p>
+                          <ul>
+                            <li>
+                              For a <strong>screening tool</strong> where
+                              identifying all potential stroke cases is
+                              critical, the
+                              <strong>Logistic Regression model</strong>
+                              would be more appropriate despite its lower
+                              overall accuracy.
+                            </li>
+                            <li>
+                              For a <strong>confirmatory tool</strong> where
+                              minimizing false positives is important, the
+                              <strong>XGBoost model</strong> might be preferred,
+                              but its low recall for stroke cases is a
+                              significant limitation.
+                            </li>
+                            <li>
+                              A <strong>hybrid approach</strong> could be
+                              valuable, using Logistic Regression for initial
+                              screening and then applying additional criteria to
+                              reduce false positives.
+                            </li>
+                          </ul>
+                          <p>
+                            Given the life-threatening nature of strokes, the
+                            higher recall of the Logistic Regression model
+                            likely makes it more valuable in this specific
+                            healthcare context, despite its lower overall
+                            accuracy.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </body>
+                </html>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>

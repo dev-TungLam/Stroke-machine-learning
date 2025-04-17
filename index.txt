@@ -1,0 +1,218 @@
+Stroke Prediction Using Logistic Regression
+According to the World Health Organization (WHO) stroke is the 2nd leading cause of death globally, responsible for approximately 11% of total deaths.
+This dataset is used to predict whether a patient is likely to get stroke based on the input parameters like gender, age, various diseases, and smoking status. Each row in the data provides relavant information about the patient.
+
+Dataset Overview and Preprocessing
+The dataset used for this project contains detailed information for each patient, where every record represents a single patient and includes the following key features:
+
+This dataset contains: 5110 rows and 12 columns
+id: unique identifier
+gender: "Male", "Female" or "Other"
+age: age of the patient
+hypertension: 0 if the patient doesn't have hypertension, 1 if the patient has hypertension
+heart_disease: 0 if the patient doesn't have any heart diseases, 1 if the patient has a heart disease
+ever_married: "No" or "Yes"
+work_type: "children", "Govt_jov", "Never_worked", "Private" or "Self-employed"
+Residence_type: "Rural" or "Urban"
+avg_glucose_level: average glucose level in blood
+bmi: body mass index
+smoking_status: "formerly smoked", "never smoked", "smokes" or "Unknown"
+stroke: 1 if the patient had a stroke or 0 if not
+Note: "Unknown" in smoking_status means that the information is unavailable for this patient
+To create any predictive model, the process of data processing involves:
+Data Cleaning: Checking for and handling missing values. For example, the BMI column may contain missing values that can be replaced with the average or middle value.
+Feature Encoding: Most of the features in the dataset are categories, such as gender, work type, residence type, and smoking status. These could be converted into numbers by techniques such as One hot encoding or label encoding
+Feature Scaling: The values of age, average blood glucose level, and BMI can be scaled to be equally important during training of the model. Methods to scale these values usually standardization (z-score normalization) and min-max scaling
+Data Splitting: The dataset is divided into 2 sets: training and testing sets (usually 80/20 split). This helps observing how well the model performs on new data
+This dataset considered a supervised learning problem since it contains a labeled column stroke (following the previous lesson of distinguishing supervised learning vs unsupervised learning)
+
+
+
+Descriptive Statistics:
+
+Age: 
+Count: 5110
+
+
+Mean (Average): ~43.23 years
+
+
+Median: 45 years
+
+
+Standard Deviation: ~22.61 years
+
+
+Range: 0.08 (min) to 82 (max)
+
+
+Quartiles:
+
+25th percentile: 25 years
+
+
+75th percentile: 61 years
+
+Average Glucose Level:	
+		
+Count: 5110
+
+
+Mean (Average): ~106.15 mg/dL
+
+
+Median: ~91.89 mg/dL
+
+
+Standard Deviation: ~45.28 mg/dL
+
+
+Range: ~55.12 mg/dL (min) to ~271.74 mg/dL (max)
+
+
+Quartiles:
+
+
+25th percentile: ~77.25 mg/dL
+
+
+75th percentile: ~114.09 mg/dL
+
+BMI (Body Mass Index)
+
+Count: 4909 (missing 201 entries)
+
+
+Mean (Average): ~28.89
+
+
+Median: ~28.10
+
+
+Standard Deviation: ~7.85
+
+
+Range: 10.30 (min) to 97.60 (max)
+
+
+Quartiles:
+
+
+25th percentile: 23.50
+
+
+75th percentile: 33.10
+
+Hypertension & Heart Disease
+
+Hypertension:
+
+
+0 (No): 4658 records
+
+
+1 (Yes): 452 records
+
+
+
+Heart Disease:
+
+
+0 (No): 4897 records
+
+
+1 (Yes): 213 records
+
+
+
+Categorical Variables
+Gender
+Categories include: Male, Female, and possibly others.
+
+
+Example Frequency:
+
+
+"Female" is the most common category (e.g., 2994 occurrences), followed by "Male".
+
+
+
+Marital Status (ever_married)
+Two main categories: Yes and No
+
+
+Example Frequency:
+
+
+"Yes" is predominant (e.g., ~3353 cases) compared to "No".
+
+
+
+Work Type
+Categories include: Private, Self-employed, Govt_job, children, and Never_worked.
+
+
+Example Frequency:
+
+
+"Private" is the most frequent work type (e.g., 2925 records).
+
+
+
+Residence Type
+Typically split into: Urban and Rural.
+
+
+Example Frequency:
+
+
+"Urban" appears as the top category (e.g., ~2596 cases).
+
+
+
+Smoking Status
+Categories include: never smoked, formerly smoked, smokes, and possibly Unknown.
+
+
+Example Frequency:
+
+
+"never smoked" is the most common (e.g., 1892 cases).
+
+
+
+
+
+Logistic Regression: 
+For this project, us (Lam and Hoan) choosing Logistic Regression as the algorithm to predict the risk of stroke. Logistic Regression is usually used for two-choice (binary) problems. It estimates the probability that a given input is in a given group that whether a patient will suffer from a stroke (1) or not (0).
+Overview:
+Binary Outcome: Logistic Regression is designed for binary outcomes. It uses the logistic (sigmoid) function to convert predicted values to probabilities between 0 and 1.
+
+
+Model Formulation: It considers various factors such as age, blood pressure, smoking status,... assign a “weight” or importance to each factor It then combines these weights to come up with a final score that shows how likely a patient will have a stroke.
+
+
+Interpretability: The weights it assigns can tell you which factors increase or decrease the risk of stroke. For example, if the weight for age is high, it means that the older you are, the higher your risk of a stroke is. This makes it useful, especially in healthcare, because doctors can see which factors matter the most.
+
+
+Optimization: The model is trained by adjusting weights for accurate predictions. It is similar to turning a radio to receive the best sound.
+
+
+
+
+
+Applying Logistic Regression to Stroke Prediction
+Data Preparation
+Cleaning the data by handling missing values, particularly in the BMI column.
+Encoding categorical variables into numerical formats.
+Scaling numerical features to ensure consistent input ranges.
+Model Training and Evaluation
+Once the data is cleaned, the dataset is split into training and testing sets. 
+Using training set, the Logistic Regression model learns by adjusting weights for each feature. It attempts to minimize errors. which are measured by a method called log-loss
+After training, the model is evaluated using various metrics such as:
+Accuracy: How often the model’s predictions are correct.
+Precision and Recall: These are key for medical use. They help ensure high risk patients are identified, missing out these patients can be dangerous
+The output probability for each patient can help show the level of risk involved.
+=> Important for doctors on treatments.
+
+
