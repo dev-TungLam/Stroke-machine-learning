@@ -37,9 +37,9 @@ for f1, color, y_pos in zip(f1_values, colors, y_positions):
     plt.text(0.25, y_pos/2, f'F1={f1}', fontsize=10, color=color)
 
 # Plot model points
-plt.scatter(0.10, 0.14, s=100, color='#4285f4', alpha=0.7, label='XGBoost')  # Blue
-plt.scatter(0.81, 0.17, s=100, color='#ea4335', alpha=0.7, label='Logistic Regression')  # Red
-plt.scatter(1.0, 1.0, s=50, color='#34a853', alpha=0.7, label='Ideal Model')  # Green
+plt.scatter(0.10, 0.14, s=100, color='#4285f4', alpha=0.7, label='XGBoost') 
+plt.scatter(0.81, 0.17, s=100, color='#ea4335', alpha=0.7, label='Logistic Regression')
+plt.scatter(1.0, 1.0, s=50, color='#34a853', alpha=0.7, label='Ideal Model')
 
 # Add labels and formatting
 plt.xlabel('Recall (Sensitivity)')

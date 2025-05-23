@@ -1,0 +1,157 @@
+GENDER:
+Stroke rate by gender: gender
+Female    4.709419
+Male      5.106383
+Other     0.000000
+Name: 1, dtype: float64
+
+
+AGE:
+
+Age distribution by stroke occurrence: count    5110.000000
+mean       43.226614
+std        22.612647
+min         0.080000
+25%        25.000000
+50%        45.000000
+75%        61.000000
+max        82.000000
+Name: age, dtype: float64
+
+HYPERTENTION:
+
+Stroke rate in patients without hypertension: 3.97%
+Stroke rate in patients with hypertension: 13.25%
+Relative risk of stroke with hypertension: 3.34x
+
+HEART DISEASE:
+
+Stroke Rate in Individuals with Heart Disease: 17.03%
+Stroke Rate in Individuals without Heart Disease: 4.18%
+
+
+MARIAL STATUS:
+
+Stroke rate in never married individuals: 1.65%
+Stroke rate in ever married individuals: 6.56%
+Relative risk of stroke for married vs never married: 3.98x
+
+Average age by marital status:
+ever_married
+No     22.014229
+Yes    54.342082
+Name: age, dtype: float64
+
+WORK TYPE:
+
+Count by work type:
+work_type
+Private          2925
+Self-employed     819
+children          687
+Govt_job          657
+Never_worked       22
+Name: count, dtype: int64
+
+Stroke rate by work type (%):
+work_type
+Govt_job         5.022831
+Never_worked     0.000000
+Private          5.094017
+Self-employed    7.936508
+children         0.291121
+Name: 1, dtype: float64
+
+Average age by work type:
+work_type
+Govt_job         50.879756
+Never_worked     16.181818
+Private          45.503932
+Self-employed    60.201465
+children          6.841339
+Name: age, dtype: float64
+
+Number of strokes by work type:
+work_type
+Govt_job          33
+Never_worked       0
+Private          149
+Self-employed     65
+children           2
+Name: stroke, dtype: int64
+
+
+RESIDENCE TYPE:
+Relative Risk (Rural/Urban): 0.87x
+Stroke Rate - Rural: 4.53%
+Stroke Rate - Urban: 5.20%
+
+
+AVG_GLUCOSE_LEVEL:
+
+Stroke rate by glucose level category:
+Low (<70): 3.57% (n=756)
+Normal (70-100): 3.58% (n=2375)
+Prediabetic (100-126): 3.71% (n=998)
+Diabetic (126-200): 8.04% (n=547)
+High Diabetic (>200): 12.90% (n=434)
+
+Odds ratios compared to normal glucose level:
+Low (<70): 1.00x
+Prediabetic (100-126): 1.04x
+Diabetic (126-200): 2.25x
+High Diabetic (>200): 3.61x
+
+The average glucose level for stroke patients is 132.5 mg/dL, which is 26.5% higher than the average for non-stroke patients (104.8 mg/dL).
+The difference in glucose levels between stroke and non-stroke patients is statistically statistically significant (p-value: 0.0000).
+
+
+
+BMI:
+Stroke Rate by BMI Category: bmi_category
+Underweight       0.286533
+Normal            2.843217
+Overweight        5.322924
+Obese             5.245684
+Severely Obese    4.589372
+Name: stroke, dtype: float64
+
+SMOKE:
+Stroke Rate by Smoking Status: stroke                   0         1
+smoking_status                      
+Unknown          96.955959  3.044041
+formerly smoked  92.090395  7.909605
+never smoked     95.243129  4.756871
+smokes           94.676806  5.323194
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
